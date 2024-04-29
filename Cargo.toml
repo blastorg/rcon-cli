@@ -1,0 +1,27 @@
+[package]
+name = "rcon"
+version = "1.0.0"
+edition = "2021"
+authors = ["GDGunnars <gdg@gdg.is>", "BLAST.tv <support@blast.tv>"]
+license = "MIT OR Apache-2.0"
+description = "Tool for sending RCON commands to game servers from the CLI"
+readme = "README.md"
+homepage = "https://blast.tv"
+repository = "https://github.com/@blastorg/rcon-cli-rs"
+keywords = ["cli", "rcon", "steam", "valve"]
+categories = ["command-line-utilities"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.82"
+clap = { version = "4.5.4", features = ["derive"] }
+clap-verbosity-flag = "2.2.0"
+clap_complete = "4.5.2"
+comfy-table = "7.1.1"
+confy = "0.6.1"
+env_logger = "0.11.3"
+inquire = "0.7.5"
+log = "0.4.21"
+rcon-client = "0.1.2"
+serde = { version = "1.0.198", features = ["derive"] }
