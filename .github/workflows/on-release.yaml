@@ -54,8 +54,7 @@ jobs:
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             mv "target/${{ matrix.target }}/release/$binary_name.exe" "$dirname"
           else
-            ls -alh "target/${{ matrix.target }}/release/"
-            mv "target/${{ matrix.target }}/release/$binary_name" "$dirname"
+          mv "target/${{ matrix.target }}/release/$binary_name" "$dirname"
           fi
 
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
