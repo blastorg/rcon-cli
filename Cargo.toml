@@ -1,6 +1,6 @@
 [package]
 name = "rcon"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 authors = ["GDGunnars <gdg@gdg.is>", "BLAST.tv <support@blast.tv>"]
 license = "MIT OR Apache-2.0"
