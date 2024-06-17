@@ -6,7 +6,7 @@ use rustyline::DefaultEditor;
 
 use crate::config::{self, ServerConfig};
 
-fn create_and_auth_client(server: ServerConfig) -> Result<RCONClient, RCONError> {
+fn create_and_auth_client(server: &ServerConfig) -> Result<RCONClient, RCONError> {
     let mut client = RCONClient::new(RCONConfig {
         url: format!("{}:{}", server.ip, server.port),
         // Optional
@@ -17,7 +17,7 @@ fn create_and_auth_client(server: ServerConfig) -> Result<RCONClient, RCONError>
 
     // Auth request to RCON server using stored password
     client
-        .auth(AuthRequest::new(server.pass))
+        .auth(AuthRequest::new(server.pass.clone()))
         .expect("Could not authenticate with RCON server");
 
     Ok(client)
@@ -95,7 +95,7 @@ pub fn shell(use_default_server: bool) -> Result<(), RCONError> {
 pub fn execute_command(use_default_server: bool, command: String) -> Result<(), RCONError> {
     let server: ServerConfig = determine_server(use_default_server);
     // Create new RCON client & validate auth
-    let mut client = create_and_auth_client(server).expect("Could not create RCON client");
+    let mut client = create_and_auth_client(&server).expect("Could not create RCON client");
 
     let mut table = Table::new();
 
