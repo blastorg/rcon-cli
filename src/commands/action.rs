@@ -1,9 +1,10 @@
 use comfy_table::{Cell, Color, Table};
 use log::error;
 use rcon_client::{AuthRequest, RCONClient, RCONConfig, RCONError, RCONRequest};
+use rustyline::error::ReadlineError;
+use rustyline::DefaultEditor;
 
 use crate::config::{self, ServerConfig};
-use inquire::Text;
 
 fn create_and_auth_client(server: ServerConfig) -> Result<RCONClient, RCONError> {
     let mut client = RCONClient::new(RCONConfig {
@@ -40,25 +41,52 @@ fn determine_server(use_default_server: bool) -> ServerConfig {
 pub fn shell(use_default_server: bool) -> Result<(), RCONError> {
     let server: ServerConfig = determine_server(use_default_server);
     // Create new RCON client & validate auth
-    let mut client = create_and_auth_client(server).expect("Could not create RCON client");
+    let mut client = create_and_auth_client(&server).expect("Could not create RCON client");
+    let mut rl = DefaultEditor::new().expect("Could not create shell editor");
 
-    let mut continue_loop = true;
-    while continue_loop {
-        let command = Text::new("(q/quit) Enter RCON command:")
-            .prompt()
-            .expect("Could not get input");
+    loop {
+        println!(
+            "▲ (q/quit) Shell mode for server: {}: {}",
+            server.name, server.ip
+        );
+        let readline = rl.readline("▶︎ ");
 
-        if command == "q" || command == "quit" {
-            continue_loop = false;
-            continue;
+        match readline {
+            Ok(command) => {
+                if command == "q" || command == "quit" {
+                    println!("▶︎ Exiting, goodbye!");
+                    break;
+                }
+
+                if let Err(err) = rl.add_history_entry(command.as_str()) {
+                    eprintln!("Failed to add history entry: {}", err);
+                }
+
+                let mut table = Table::new();
+
+                let command_response = client.execute(RCONRequest::new(command))?;
+
+                table.add_row(vec![Cell::new(command_response.body).fg(Color::Green)]);
+                println!("▲\n{}", table);
+            }
+
+            Err(ReadlineError::Interrupted) => {
+                // CTRL-C"
+                println!("▶︎ Exiting, goodbye!");
+                break;
+            }
+
+            Err(ReadlineError::Eof) => {
+                // CTRL-D
+                println!("▶︎ Exiting, goodbye!");
+                break;
+            }
+
+            Err(err) => {
+                println!("▼ Error: {:?}", err);
+                break;
+            }
         }
-
-        let mut table = Table::new();
-
-        let command_response = client.execute(RCONRequest::new(command))?;
-
-        table.add_row(vec![Cell::new(command_response.body).fg(Color::Green)]);
-        println!("▲\n{}", table);
     }
 
     Ok(())

@@ -139,7 +139,7 @@ pub fn set_and_save_default_server(server: ServerConfig) {
 
 pub fn select_server_from_list() -> ServerConfig {
     let cfg: RconCliConfig = get_config();
-    let selected_server = Select::new("Selected server: ", cfg.servers.clone())
+    let selected_server = Select::new("Selected server: ", cfg.servers)
         .prompt()
         .expect("Error selecting server");
 
