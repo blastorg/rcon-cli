@@ -29,9 +29,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Rust
-        # Or @nightly if you want
         uses: dtolnay/rust-toolchain@stable
-        # Arguments to pass in
         with:
           # Make Rust compile to our target (defined in the matrix)
           targets: ${{ matrix.target }}
@@ -40,7 +38,6 @@ jobs:
         shell: bash
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      # TODO: Build project here
       - name: Build project
         run: cargo build --release --target ${{ matrix.target }}
 
