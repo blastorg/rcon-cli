@@ -110,19 +110,25 @@ impl ::std::default::Default for RconCliConfig {
 }
 
 pub fn get_path() -> String {
-    let path = confy::get_configuration_file_path("rcon_cli", None).unwrap();
-    return path.to_str().unwrap().to_string();
+    let path = confy::get_configuration_file_path("rcon_cli", None)
+        .expect("Could not get configuration file path");
+
+    return path
+        .to_str()
+        .expect("Could not convert path to string")
+        .to_string();
 }
 
 pub fn get_config() -> RconCliConfig {
-    let cfg: RconCliConfig = confy::load("rcon_cli", None).unwrap();
+    let cfg: RconCliConfig =
+        confy::load("rcon_cli", None).expect("Could not load configuration file");
     return cfg;
 }
 
 pub fn save_config(cfg: RconCliConfig) {
     let mut config = cfg.clone();
     config.order_servers();
-    confy::store("rcon_cli", None, config).unwrap();
+    confy::store("rcon_cli", None, config).expect("Error saving configuration file");
 }
 
 pub fn set_and_save_default_server(server: ServerConfig) {
@@ -133,11 +139,9 @@ pub fn set_and_save_default_server(server: ServerConfig) {
 
 pub fn select_server_from_list() -> ServerConfig {
     let cfg: RconCliConfig = get_config();
-    let ans = Select::new("Selected server: ", cfg.servers.clone()).prompt();
-    let selected_server = match ans {
-        Ok(choice) => choice,
-        Err(_) => panic!("There was an error, please try again"),
-    };
+    let selected_server = Select::new("Selected server: ", cfg.servers.clone())
+        .prompt()
+        .expect("Error selecting server");
 
     return selected_server;
 }

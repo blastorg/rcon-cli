@@ -12,10 +12,12 @@ fn create_and_auth_client(server: ServerConfig) -> Result<RCONClient, RCONError>
         read_timeout: Some(13),
         write_timeout: Some(37),
     })
-    .unwrap();
+    .expect("Could not create RCON client");
 
-    // Auth request to RCON server (SERVERDATA_AUTH)
-    client.auth(AuthRequest::new(server.pass)).unwrap();
+    // Auth request to RCON server using stored password
+    client
+        .auth(AuthRequest::new(server.pass))
+        .expect("Could not authenticate with RCON server");
 
     Ok(client)
 }
@@ -27,11 +29,9 @@ fn determine_server(use_default_server: bool) -> ServerConfig {
             error!("No default server set, please add one with `rcon server set-default`",);
             std::process::exit(2);
         }
-        println!(
-            "▲ Default server is enabled: {}",
-            cfg.default_server.as_ref().unwrap()
-        );
-        return cfg.default_server.unwrap();
+        let default_server = cfg.default_server.expect("No default server set");
+        println!("▲ Default server is enabled: {}", default_server);
+        return default_server;
     } else {
         return config::select_server_from_list();
     }
@@ -40,11 +40,13 @@ fn determine_server(use_default_server: bool) -> ServerConfig {
 pub fn shell(use_default_server: bool) -> Result<(), RCONError> {
     let server: ServerConfig = determine_server(use_default_server);
     // Create new RCON client & validate auth
-    let mut client = create_and_auth_client(server).unwrap();
+    let mut client = create_and_auth_client(server).expect("Could not create RCON client");
 
     let mut continue_loop = true;
     while continue_loop {
-        let command = Text::new("(q/quit) Enter RCON command:").prompt().unwrap();
+        let command = Text::new("(q/quit) Enter RCON command:")
+            .prompt()
+            .expect("Could not get input");
 
         if command == "q" || command == "quit" {
             continue_loop = false;
@@ -65,7 +67,7 @@ pub fn shell(use_default_server: bool) -> Result<(), RCONError> {
 pub fn execute_command(use_default_server: bool, command: String) -> Result<(), RCONError> {
     let server: ServerConfig = determine_server(use_default_server);
     // Create new RCON client & validate auth
-    let mut client = create_and_auth_client(server).unwrap();
+    let mut client = create_and_auth_client(server).expect("Could not create RCON client");
 
     let mut table = Table::new();
 

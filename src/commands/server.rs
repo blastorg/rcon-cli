@@ -7,14 +7,25 @@ use inquire::{Confirm, Text};
 use log::{debug, info};
 
 pub fn add_server() {
-    let name = Text::new("Name of server:").prompt().unwrap();
-    let ip: String = Text::new("Address:").prompt().unwrap();
-    let port: String = Text::new("Port:").with_default("27015").prompt().unwrap();
-    let pass: String = Text::new("RCON password:").prompt().unwrap();
-    let set_as_default: bool = Confirm::new("Set as default server?").prompt().unwrap();
+    let name = Text::new("Name of server:")
+        .prompt()
+        .expect("Could not get server name");
+    let ip: String = Text::new("Address:")
+        .prompt()
+        .expect("Could not get server address");
+    let port: String = Text::new("Port:")
+        .with_default("27015")
+        .prompt()
+        .expect("Could not get server port");
+    let pass: String = Text::new("RCON password:")
+        .prompt()
+        .expect("Could not get RCON password");
+    let set_as_default: bool = Confirm::new("Set as default server?")
+        .prompt()
+        .expect("Could not get default server setting");
     let correct_info = Confirm::new("Is the above information correct?")
         .prompt()
-        .unwrap();
+        .expect("Could not get confirmation");
 
     if !correct_info {
         info!("Server configuration not saved");
@@ -47,26 +58,26 @@ pub fn edit_server() {
     let name = Text::new("Name of server:")
         .with_default(&server.name)
         .prompt()
-        .unwrap();
+        .expect("Could not get server name");
     let ip = Text::new("IP address:")
         .with_default(&server.ip)
         .prompt()
-        .unwrap();
+        .expect("Could not get server address");
     let port = Text::new("Port:")
         .with_default(&server.port)
         .prompt()
-        .unwrap();
+        .expect("Could not get server port");
     let pass = Text::new("RCON password:")
         .with_default(&server.pass)
         .prompt()
-        .unwrap();
+        .expect("Could not get RCON password");
 
     let override_settings = Confirm::new(&format!(
         "You want to override {} with the above info?",
         server.name
     ))
     .prompt()
-    .unwrap();
+    .expect("Could not get confirmation");
 
     if override_settings {
         let mut new_config: RconCliConfig = config::get_config();
@@ -82,7 +93,7 @@ pub fn edit_server() {
 pub fn clear_servers() {
     let confirm_prompt = Confirm::new("Are you sure you want to clear all server configurations?")
         .prompt()
-        .unwrap();
+        .expect("Could not get confirmation");
     if confirm_prompt {
         let mut cfg: RconCliConfig = config::get_config();
         cfg.clear();
@@ -101,7 +112,7 @@ pub fn remove_server() {
         server.name
     ))
     .prompt()
-    .unwrap();
+    .expect("Could not get confirmation");
     if confirm_prompt {
         let mut new_config = RconCliConfig::new(cfg.default_server, cfg.servers);
         new_config.remove_server(server.clone());
@@ -123,18 +134,20 @@ pub fn list_servers() {
     ]);
 
     let cfg: RconCliConfig = config::get_config();
-    for server in cfg.servers {
-        if cfg.default_server.is_some() && cfg.default_server.as_ref().unwrap().name == server.name
-        {
-            table.add_row(vec![
-                Cell::new(&server.name).fg(Color::Green),
-                Cell::new(&server.ip).fg(Color::Green),
-                Cell::new(&server.port).fg(Color::Green),
-                Cell::new(&server.pass).fg(Color::Green),
-                Cell::new("✓").fg(Color::Green),
-            ]);
-            continue;
+    for server in &cfg.servers {
+        if let Some(ref default) = cfg.default_server {
+            if server == default {
+                table.add_row(vec![
+                    Cell::new(&server.name).fg(Color::Green),
+                    Cell::new(&server.ip).fg(Color::Green),
+                    Cell::new(&server.port).fg(Color::Green),
+                    Cell::new(&server.pass).fg(Color::Green),
+                    Cell::new("✓").fg(Color::Green),
+                ]);
+                continue;
+            }
         }
+
         table.add_row(vec![
             Cell::new(&server.name),
             Cell::new(&server.ip),
