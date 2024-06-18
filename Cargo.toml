@@ -1,6 +1,6 @@
 [package]
 name = "rcon"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 authors = ["GDGunnars <gdg@gdg.is>", "BLAST.tv <support@blast.tv>"]
 license = "MIT OR Apache-2.0"
@@ -24,4 +24,5 @@ env_logger = "0.11.3"
 inquire = "0.7.5"
 log = "0.4.21"
 rcon-client = "0.1.2"
+rustyline = "14.0.0"
 serde = { version = "1.0.198", features = ["derive"] }

@@ -13,7 +13,7 @@ pub fn completion(path: Option<PathBuf>) -> Result<(), Error> {
         let name = cli.get_name().to_string();
 
         if let Some(location) = path {
-            generate(shell, &mut cli, name, &mut File::create(location.clone())?);
+            generate(shell, &mut cli, name, &mut File::create(&location)?);
             println!("Shell autocomplete script generated at: {:?}", location)
         } else {
             error!("▲ Could not determine location to generate shell completion script");
