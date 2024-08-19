@@ -1,6 +1,6 @@
 # RCON-CLI
 
-A simple CLI for valves RCON server management.
+A simple CLI for Valve's RCON server management.
 
 ![rcon cli preview](./media/rcon-demo-min.gif?raw=true)
 
@@ -17,7 +17,7 @@ example commands:
 - `rcon -d action exec` // execute a command on the **Default server**
 - `rcon action exec` // execute a command on a server _(selected from a list)_
 - `rcon action shell` // open a recurring command executor
-- `rcon shell-completion <Filename e.g. completion.sh>` // generate shell completion script (auto detects shell)
+- `rcon shell-completion <filename e.g. completion.sh>` // generate shell completion script (auto detects shell)
 
 ## Installation
 
